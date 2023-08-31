@@ -72,7 +72,7 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
   final messageBodyController = TextEditingController();
   final numMessageController = TextEditingController();
   final topicController = TextEditingController();
-  Future<PublishResponse>? _publishResponse;
+  final responseController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -100,50 +100,26 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
           ),
         ),
         // Reponse
-        (_publishResponse == null)
-            ? TextFormField(
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Response',
-                ),
-              )
-            : buildFutureBuilder(),
+        TextFormField(
+          maxLines: 3,
+          controller: responseController,
+        ),
         const SizedBox(height: 5),
         ElevatedButton(
-          onPressed: () {
-            setState(() {
-              var numOfMsg = int.tryParse(numMessageController.text);
-              _publishResponse = publish(
-                messageBodyController.text,
-                numOfMsg ?? 1, // if numOfMsg is null default value is 1
-                topicController.text,
-              );
-            });
+          onPressed: () async {
+            var numOfMsg = int.tryParse(numMessageController.text);
+            var res = await publish(
+              messageBodyController.text,
+              numOfMsg ?? 1, // if numOfMsg is null default value is 1
+              topicController.text,
+            );
+
+            responseController.text =
+                "total message: ${res.totalMessage} \nsuccess: ${res.success} \nfailed: ${res.failed}";
           },
           child: const Text("Publish"),
         )
       ],
-    );
-  }
-
-  FutureBuilder<PublishResponse> buildFutureBuilder() {
-    return FutureBuilder(
-      future: _publishResponse,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return TextFormField(
-            maxLines: 5,
-            initialValue:
-                "Total: ${snapshot.data!.totalMessage} Success: ${snapshot.data!.success} Failed: ${snapshot.data!.failed}",
-          );
-        } else if (snapshot.hasError) {
-          return TextFormField(
-            maxLines: 5,
-            initialValue: "${snapshot.error}",
-          );
-        }
-        return const CircularProgressIndicator();
-      },
     );
   }
 }
@@ -188,4 +164,7 @@ class PublishResponse {
       failed: json['failed'],
     );
   }
+
+  Map toJson() =>
+      {'totalMessage': totalMessage, 'success': success, 'failed': failed};
 }
