@@ -50,6 +50,6 @@ Future<ListTopicAPIResponse> listTopics() async {
   if (response.statusCode == 200) {
     return ListTopicAPIResponse.fromJson(jsonDecode(response.body));
   } else {
-    throw Exception('Failed to publish message');
+    throw Exception('Failed to list topic');
   }
 }

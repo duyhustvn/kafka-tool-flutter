@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:kafka_tool/api/publish_msg_api.dart';
 import 'package:kafka_tool/api/topic_list_api.dart';
+import 'package:kafka_tool/api/request_list_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -75,11 +77,13 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
   String? selectedTopic;
 
   List<String> topics = [];
+  List<Request> requests = [];
 
   @override
   void initState() {
     super.initState();
     _listTopics();
+    _listRequests();
   }
 
   Future<void> _listTopics() async {
@@ -88,11 +92,23 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
       if (res.status == 'ok') {
         setState(() {
           topics = res.data!.topics;
-          selectedTopic = topics[0];
         });
       }
     } catch (e) {
       print("Error loading topics: $e");
+    }
+  }
+
+  Future<void> _listRequests() async {
+    try {
+      final res = await listRequests();
+      if (res.status == 'ok') {
+        setState(() {
+          requests = res.data!.requests;
+        });
+      }
+    } catch (e) {
+      print("Error loading requests: $e");
     }
   }
 
@@ -106,7 +122,30 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
           Row(
             children: [
               DropdownMenu(
-                initialSelection: selectedTopic,
+                // initialSelection: selectedTopic,
+                controller: topicController,
+                width: 200.0,
+                // requestFocusOnTap is enabled/disabled by platforms when it is null.
+                // On mobile platforms, this is false by default. Setting this to true will
+                // trigger focus request on the text field and virtual keyboard will appear
+                // afterward. On desktop platforms however, this defaults to true.
+                requestFocusOnTap: true,
+                label: const Text('Title'),
+                onSelected: (String? topic) {
+                  setState(() {
+                    selectedTopic = topic;
+                  });
+                },
+                dropdownMenuEntries:
+                    topics.map<DropdownMenuEntry<String>>((String topic) {
+                  return DropdownMenuEntry<String>(value: topic, label: topic);
+                }).toList(),
+              ),
+              const SizedBox(
+                width: 7,
+              ),
+              DropdownMenu(
+                // initialSelection: selectedTopic,
                 controller: topicController,
                 width: 200.0,
                 // requestFocusOnTap is enabled/disabled by platforms when it is null.
@@ -132,6 +171,10 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
                 child: TextFormField(
                   maxLines: 1,
                   controller: numMessageController,
+                  // keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                   decoration: InputDecoration(
                     labelText: 'Number Of message',
                     enabledBorder: OutlineInputBorder(
@@ -154,6 +197,10 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
               ),
             ],
           ),
+          const SizedBox(
+            height: 7,
+          ),
+
           const SizedBox(
             height: 7,
           ),
@@ -204,21 +251,30 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
           ),
           const SizedBox(height: 7),
 
-          ElevatedButton(
-            onPressed: () async {
-              responseController.text = "";
-              var numOfMsg = int.tryParse(numMessageController.text);
-              var res = await publish(
-                messageBodyController.text,
-                numOfMsg ?? 1, // if numOfMsg is null default value is 1
-                topicController.text,
-              );
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            ElevatedButton(
+              onPressed: () async {},
+              child: const Text("Save"),
+            ),
+            //
+            const SizedBox(width: 5),
+            //
+            ElevatedButton(
+              onPressed: () async {
+                responseController.text = "";
+                var numOfMsg = int.tryParse(numMessageController.text);
+                var res = await publish(
+                  messageBodyController.text,
+                  numOfMsg ?? 1, // if numOfMsg is null default value is 1
+                  topicController.text,
+                );
 
-              responseController.text =
-                  "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
-            },
-            child: const Text("Publish"),
-          )
+                responseController.text =
+                    "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
+              },
+              child: const Text("Publish"),
+            )
+          ])
         ],
       ),
     );
