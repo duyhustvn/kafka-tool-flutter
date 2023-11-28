@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:async';
+import 'package:kafka_tool/api/publish_msg_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -129,7 +127,7 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
                   );
 
                   responseController.text =
-                      "total message: ${res.totalMessage} \nsuccess: ${res.success} \nfailed: ${res.failed}";
+                      "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
                 },
                 child: const Text("Publish"),
               )
@@ -176,49 +174,4 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
       ),
     );
   }
-}
-
-Future<PublishResponse> publish(
-    String message, int numOfMsg, String topic) async {
-  final response = await http
-      .post(
-        Uri.parse("http://127.0.0.1:9000"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'message': message,
-          'topic': topic,
-          'quantity': numOfMsg,
-        }),
-      )
-      .timeout(const Duration(seconds: 60));
-
-  if (response.statusCode == 201) {
-    return PublishResponse.fromJson(jsonDecode(response.body));
-  } else {
-    throw Exception('Failed to publish message');
-  }
-}
-
-class PublishResponse {
-  final int totalMessage;
-  final int success;
-  final int failed;
-
-  const PublishResponse(
-      {required this.totalMessage,
-      required this.success,
-      required this.failed});
-
-  factory PublishResponse.fromJson(Map<String, dynamic> json) {
-    return PublishResponse(
-      totalMessage: json['totalMessage'],
-      success: json['success'],
-      failed: json['failed'],
-    );
-  }
-
-  Map toJson() =>
-      {'totalMessage': totalMessage, 'success': success, 'failed': failed};
 }
