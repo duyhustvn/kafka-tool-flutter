@@ -72,6 +72,7 @@ class BuildPublishWidget extends StatefulWidget {
 class _BuildPublishWidgetState extends State<BuildPublishWidget> {
   final messageBodyController = TextEditingController();
   final numMessageController = TextEditingController();
+  final requestController = TextEditingController();
   final topicController = TextEditingController();
   final responseController = TextEditingController();
   String? selectedTopic;
@@ -123,7 +124,7 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
             children: [
               DropdownMenu(
                 // initialSelection: selectedTopic,
-                controller: topicController,
+                controller: requestController,
                 width: 200.0,
                 // requestFocusOnTap is enabled/disabled by platforms when it is null.
                 // On mobile platforms, this is false by default. Setting this to true will
@@ -131,14 +132,18 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
                 // afterward. On desktop platforms however, this defaults to true.
                 requestFocusOnTap: true,
                 label: const Text('Title'),
-                onSelected: (String? topic) {
-                  setState(() {
-                    selectedTopic = topic;
-                  });
+                onSelected: (Request? request) {
+                  // setState(() {
+                  //   selectedTopic = request!.topic;
+                  // });
+                  numMessageController.text = request!.quantity.toString();
+                  topicController.text = request.topic;
+                  messageBodyController.text = request.message;
                 },
                 dropdownMenuEntries:
-                    topics.map<DropdownMenuEntry<String>>((String topic) {
-                  return DropdownMenuEntry<String>(value: topic, label: topic);
+                    requests.map<DropdownMenuEntry<Request>>((Request request) {
+                  return DropdownMenuEntry<Request>(
+                      value: request, label: request.title);
                 }).toList(),
               ),
               const SizedBox(
@@ -253,7 +258,14 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
 
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ElevatedButton(
-              onPressed: () async {},
+              onPressed: () async {
+                var requestTitle = requestController.text;
+                var topic = topicController.text;
+                var numOfMsg = int.tryParse(numMessageController.text);
+                var msg = messageBodyController.text;
+                print(
+                    "requestTitle: $requestTitle topic: $topic numOfMsg: $numOfMsg msg: $msg");
+              },
               child: const Text("Save"),
             ),
             //
