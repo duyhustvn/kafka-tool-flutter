@@ -1,0 +1,12 @@
+# put this file to ~/.local/share/applications/
+# update the Exec and Icon to the appropriate location
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=KafkaTool
+Exec=/opt/KafkaTool/kafka_tool
+Icon=/home/$USER/.icons/flutter.png
+Comment=kafka tool
+Categories=Development
+Terminal=false
+StartupNotify=true
