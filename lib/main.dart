@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:kafka_tool/api/publish_msg_api.dart';
 import 'package:kafka_tool/api/topic_list_api.dart';
 import 'package:kafka_tool/api/request_list_api.dart';
+import 'package:kafka_tool/api/request_create_api.dart';
+import 'package:kafka_tool/api/request_update_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -76,6 +78,7 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
   final topicController = TextEditingController();
   final responseController = TextEditingController();
   String? selectedTopic;
+  String? selectedRequestID;
 
   List<String> topics = [];
   List<Request> requests = [];
@@ -133,9 +136,9 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
                 requestFocusOnTap: true,
                 label: const Text('Title'),
                 onSelected: (Request? request) {
-                  // setState(() {
-                  //   selectedTopic = request!.topic;
-                  // });
+                  setState(() {
+                    selectedRequestID = request!.id;
+                  });
                   numMessageController.text = request!.quantity.toString();
                   topicController.text = request.topic;
                   messageBodyController.text = request.message;
@@ -259,12 +262,22 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ElevatedButton(
               onPressed: () async {
-                var requestTitle = requestController.text;
-                var topic = topicController.text;
-                var numOfMsg = int.tryParse(numMessageController.text);
-                var msg = messageBodyController.text;
-                print(
-                    "requestTitle: $requestTitle topic: $topic numOfMsg: $numOfMsg msg: $msg");
+                try {
+                  var id = selectedRequestID;
+                  var requestTitle = requestController.text;
+                  var topic = topicController.text;
+                  var numOfMsg = int.parse(numMessageController.text);
+                  var msg = messageBodyController.text;
+                  // print("requestID: : $id requestTitle: $requestTitle topic: $topic numOfMsg: $numOfMsg msg: $msg");
+                  if (id != null) {
+                    await updateRequest(id, requestTitle, topic, numOfMsg, msg);
+                  } else {
+                    await createRequest(requestTitle, topic, numOfMsg, msg);
+                  }
+                  _listRequests();
+                } catch (e) {
+                  print("There is an error happened $e");
+                }
               },
               child: const Text("Save"),
             ),
@@ -274,15 +287,17 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
             ElevatedButton(
               onPressed: () async {
                 responseController.text = "";
-                var numOfMsg = int.tryParse(numMessageController.text);
-                var res = await publish(
-                  messageBodyController.text,
-                  numOfMsg ?? 1, // if numOfMsg is null default value is 1
-                  topicController.text,
-                );
+                try {
+                  var numOfMsg = int.parse(numMessageController.text);
+                  String message = messageBodyController.text;
+                  String topic = topicController.text;
+                  var res = await publish(message, numOfMsg, topic);
 
-                responseController.text =
-                    "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
+                  responseController.text =
+                      "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
+                } catch (e) {
+                  responseController.text = "There is an error happened";
+                }
               },
               child: const Text("Publish"),
             )

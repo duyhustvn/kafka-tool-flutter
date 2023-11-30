@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:kafka_tool/api/base.dart';
 
 class Request {
+  final String id;
   final String title;
   final String topic;
   final int quantity;
@@ -12,7 +13,8 @@ class Request {
   final String message;
 
   const Request(
-      {required this.title,
+      {required this.id,
+      required this.title,
       required this.topic,
       required this.quantity,
       required this.type,
@@ -20,6 +22,7 @@ class Request {
 
   factory Request.fromJson(Map<String, dynamic> json) {
     return Request(
+        id: json['id'],
         title: json['title'],
         topic: json['topic'],
         quantity: json['quantity'],
@@ -60,7 +63,7 @@ class ListRequestAPIResponse {
   }
 }
 
-/* Call /requests API to list requests*/
+/* Call list requests API to list requests*/
 Future<ListRequestAPIResponse> listRequests() async {
   final response = await http
       .get(Uri.parse("$kafkaToolURL/kafka/requests"), headers: <String, String>{
