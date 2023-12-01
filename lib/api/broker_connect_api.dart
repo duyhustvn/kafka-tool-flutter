@@ -16,8 +16,6 @@ Future<dynamic> connectKafkaBrokers(String brokers) async {
         }),
       )
       .timeout(const Duration(seconds: 60));
-  int statusCode = response.statusCode;
-  print("statusCode: $statusCode ");
   if (response.statusCode == 200) {
     return true;
   } else {
