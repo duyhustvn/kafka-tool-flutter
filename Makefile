@@ -1,3 +1,4 @@
+
 test:
 	flutter test
 
@@ -10,8 +11,8 @@ run:
 release:
 	flutter build linux --release
 
-bundle:
-	tar -cf bundle.tar build/linux/x64/release/bundle
+build-linux:
+	flutter build linux --release
 
-clean:
-	rm bundle.tar
+bundle-linux:
+	cd build/linux/x64/release/bundle && tar -czvf kafka_tool_linux.tar.gz data lib kafka_tool

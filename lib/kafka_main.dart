@@ -27,10 +27,10 @@ class KafkaTabBar extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: <Widget>[
-            const BuildPublishWidget(),
-            const Center(
+            BuildPublishWidget(),
+            Center(
               child: Text(""),
             ),
           ],
@@ -66,6 +66,17 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
     _listRequests();
   }
 
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree.
+    messageBodyController.dispose();
+    numMessageController.dispose();
+    requestController.dispose();
+    topicController.dispose();
+    responseController.dispose();
+    super.dispose();
+  }
+
   Future<void> _listTopics() async {
     try {
       final res = await listTopics();
@@ -75,7 +86,7 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
         });
       }
     } catch (e) {
-      print("Error loading topics: $e");
+      // print("Error loading topics: $e");
     }
   }
 
@@ -88,7 +99,7 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
         });
       }
     } catch (e) {
-      print("Error loading requests: $e");
+      // print("Error loading requests: $e");
     }
   }
 
@@ -252,7 +263,7 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
                   }
                   _listRequests();
                 } catch (e) {
-                  print("There is an error happened $e");
+                  // print("There is an error happened $e");
                 }
               },
               child: const Text("Save"),

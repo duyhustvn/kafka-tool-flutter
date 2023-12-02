@@ -29,6 +29,20 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
   final brokersController = TextEditingController();
 
   bool isConnectedKafkaBrokers = false;
+  bool displayConnectBrokerResult = false;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree.
+    brokersController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,20 +69,33 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
                 borderRadius: BorderRadius.circular(5.0),
               ),
             ),
+            onChanged: (String text) async {
+              setState(() {
+                displayConnectBrokerResult = false;
+              });
+            },
           ),
           const SizedBox(height: 7),
           ElevatedButton(
             onPressed: () async {
               try {
                 String brokers = brokersController.text;
+                setState(() {
+                  isLoading = true;
+                });
                 await connectKafkaBrokers(brokers);
                 setState(() {
+                  isLoading = false;
                   isConnectedKafkaBrokers = true;
                 });
               } catch (e) {
-                print("There is an error happend $e");
                 setState(() {
+                  isLoading = false;
                   isConnectedKafkaBrokers = false;
+                });
+              } finally {
+                setState(() {
+                  displayConnectBrokerResult = true;
                 });
               }
             },
@@ -82,16 +109,29 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
   }
 
   Widget _toggleNextButton(BuildContext context) {
-    return isConnectedKafkaBrokers
-        ? ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const KafkaTabBar()),
-              );
-            },
-            child: const Text("Next"),
-          )
-        : Container();
+    if (!displayConnectBrokerResult) {
+      return Container();
+    }
+
+    if (isLoading) {
+      return const CircularProgressIndicator();
+    } else {
+      if (isConnectedKafkaBrokers) {
+        return ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const KafkaTabBar()),
+            );
+          },
+          child: const Text("Next"),
+        );
+      } else {
+        return const Text(
+          "Cannot connect to kafka brokers",
+          style: TextStyle(color: Colors.red),
+        );
+      }
+    }
   }
 }
