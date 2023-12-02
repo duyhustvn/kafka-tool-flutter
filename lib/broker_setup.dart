@@ -115,23 +115,35 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
 
     if (isLoading) {
       return const CircularProgressIndicator();
+    }
+
+    if (isConnectedKafkaBrokers) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "Connected to Kafka brokers successfully",
+              style: TextStyle(color: Colors.green),
+            ),
+            const SizedBox(height: 7),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const KafkaTabBar()),
+                );
+              },
+              child: const Text("Next"),
+            )
+          ],
+        ),
+      );
     } else {
-      if (isConnectedKafkaBrokers) {
-        return ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const KafkaTabBar()),
-            );
-          },
-          child: const Text("Next"),
-        );
-      } else {
-        return const Text(
-          "Cannot connect to kafka brokers",
-          style: TextStyle(color: Colors.red),
-        );
-      }
+      return const Text(
+        "Cannot connect to kafka brokers",
+        style: TextStyle(color: Colors.red),
+      );
     }
   }
 }

@@ -56,6 +56,10 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
   String? selectedTopic;
   String? selectedRequestID;
 
+  bool isLoading = false;
+  bool saveRequestStatusSuccess = false;
+  String msgStatus = "";
+
   List<String> topics = [];
   List<Request> requests = [];
 
@@ -247,8 +251,13 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
           const SizedBox(height: 7),
 
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            // Button save request
             ElevatedButton(
               onPressed: () async {
+                setState(() {
+                  isLoading = true;
+                  msgStatus = "";
+                });
                 try {
                   var id = selectedRequestID;
                   var requestTitle = requestController.text;
@@ -261,36 +270,76 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
                   } else {
                     await createRequest(requestTitle, topic, numOfMsg, msg);
                   }
+                  setState(() {
+                    msgStatus = "Save message successfully";
+                    saveRequestStatusSuccess = true;
+                  });
                   _listRequests();
                 } catch (e) {
                   // print("There is an error happened $e");
+                  setState(() {
+                    msgStatus = "Failed to save message";
+                    saveRequestStatusSuccess = false;
+                  });
+                } finally {
+                  setState(() {
+                    isLoading = false;
+                  });
                 }
               },
               child: const Text("Save"),
             ),
             //
             const SizedBox(width: 5),
-            //
+            // Button publish messages
             ElevatedButton(
               onPressed: () async {
+                setState(() {
+                  isLoading = true;
+                  msgStatus = "";
+                });
                 responseController.text = "";
                 try {
                   var numOfMsg = int.parse(numMessageController.text);
                   String message = messageBodyController.text;
                   String topic = topicController.text;
                   var res = await publish(message, numOfMsg, topic);
-
-                  responseController.text =
-                      "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
+                  if (res.status == "ok") {
+                    responseController.text =
+                        "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
+                  } else {
+                    responseController.text = res.msg.toString();
+                  }
                 } catch (e) {
-                  responseController.text = "There is an error happened";
+                  responseController.text =
+                      'There is an error happened. Please check the connection with API';
+                } finally {
+                  setState(() {
+                    isLoading = false;
+                  });
                 }
               },
               child: const Text("Publish"),
-            )
-          ])
+            ),
+          ]),
+          //
+          const SizedBox(height: 15),
+          //
+          _buildStatusMsg(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatusMsg(BuildContext context) {
+    if (isLoading) {
+      return const CircularProgressIndicator();
+    }
+
+    return Text(
+      msgStatus,
+      style: TextStyle(
+          color: saveRequestStatusSuccess ? Colors.green : Colors.red),
     );
   }
 }

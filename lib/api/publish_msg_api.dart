@@ -21,11 +21,9 @@ Future<PublishMsgAPIResponse> publish(
       )
       .timeout(const Duration(seconds: 60));
 
-  if (response.statusCode == 200) {
-    return PublishMsgAPIResponse.fromJson(jsonDecode(response.body));
-  } else {
-    throw Exception('Failed to publish message');
-  }
+  PublishMsgAPIResponse res =
+      PublishMsgAPIResponse.fromJson(jsonDecode(response.body));
+  return res;
 }
 
 class PublishMsgAPIData {
@@ -65,7 +63,9 @@ class PublishMsgAPIResponse {
   factory PublishMsgAPIResponse.fromJson(Map<String, dynamic> json) {
     return PublishMsgAPIResponse(
       status: json['status'],
-      data: PublishMsgAPIData.fromJson(json['data']),
+      data: json['data'] != null
+          ? PublishMsgAPIData.fromJson(json['data'])
+          : null,
       msg: json['msg'],
     );
   }
