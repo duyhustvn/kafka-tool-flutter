@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/services.dart';
+// UI
+import 'package:kafka_tool/sidebar.dart';
+
+// API
 import 'package:kafka_tool/api/publish_msg_api.dart';
 import 'package:kafka_tool/api/topic_list_api.dart';
 import 'package:kafka_tool/api/request_list_api.dart';
@@ -15,6 +19,7 @@ class KafkaTabBar extends StatelessWidget {
       initialIndex: 0,
       length: 2,
       child: Scaffold(
+        drawer: Sidebar(),
         appBar: AppBar(
           title: const Text('Kafka Tool'),
           bottom: const TabBar(
