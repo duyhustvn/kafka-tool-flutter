@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kafka_tool/broker_setup.dart';
 
 class MainApp extends StatelessWidget {
@@ -7,6 +8,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: FToastBuilder(),
       theme: ThemeData(useMaterial3: true),
       home: const BrokerSetupScreen(),
     );

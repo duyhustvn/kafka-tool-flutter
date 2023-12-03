@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/services.dart';
 import 'package:kafka_tool/api/publish_msg_api.dart';
 import 'package:kafka_tool/api/topic_list_api.dart';
@@ -57,15 +58,18 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
   String? selectedRequestID;
 
   bool isLoading = false;
-  bool saveRequestStatusSuccess = false;
-  String msgStatus = "";
 
   List<String> topics = [];
   List<Request> requests = [];
 
+  late FToast fToast;
+
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    // if you want to use context from globally instead of content we need to pass navigatorKey.currentContext!
+    fToast.init(context);
     _listTopics();
     _listRequests();
   }
@@ -256,7 +260,6 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
               onPressed: () async {
                 setState(() {
                   isLoading = true;
-                  msgStatus = "";
                 });
                 try {
                   var id = selectedRequestID;
@@ -270,17 +273,11 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
                   } else {
                     await createRequest(requestTitle, topic, numOfMsg, msg);
                   }
-                  setState(() {
-                    msgStatus = "Save message successfully";
-                    saveRequestStatusSuccess = true;
-                  });
+                  _showToast("Save request successfully", "success");
                   _listRequests();
                 } catch (e) {
                   // print("There is an error happened $e");
-                  setState(() {
-                    msgStatus = "Failed to save message";
-                    saveRequestStatusSuccess = false;
-                  });
+                  _showToast("Failed to save request", "error");
                 } finally {
                   setState(() {
                     isLoading = false;
@@ -296,7 +293,6 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
               onPressed: () async {
                 setState(() {
                   isLoading = true;
-                  msgStatus = "";
                 });
                 responseController.text = "";
                 try {
@@ -334,12 +330,47 @@ class _BuildPublishWidgetState extends State<BuildPublishWidget> {
   Widget _buildStatusMsg(BuildContext context) {
     if (isLoading) {
       return const CircularProgressIndicator();
+    } else {
+      return Container();
+    }
+  }
+
+  _showToast(String message, String toastType) {
+    late MaterialAccentColor color;
+    switch (toastType) {
+      case "error":
+        color = Colors.redAccent;
+        break;
+      case "success":
+        color = Colors.greenAccent;
+      case "warning":
+        color = Colors.orangeAccent;
+      default:
+        color = Colors.cyanAccent;
     }
 
-    return Text(
-      msgStatus,
-      style: TextStyle(
-          color: saveRequestStatusSuccess ? Colors.green : Colors.red),
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: color,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.check),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(message),
+        ],
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: const Duration(seconds: 2),
     );
   }
 }

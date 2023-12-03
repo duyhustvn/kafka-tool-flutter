@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kafka_tool/api/broker_connect_api.dart';
 import 'package:kafka_tool/kafka_main.dart';
 
@@ -32,9 +33,14 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
   bool displayConnectBrokerResult = false;
   bool isLoading = false;
 
+  late FToast fToast;
+
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    // if you want to use context from globally instead of content we need to pass navigatorKey.currentContext!
+    fToast.init(context);
   }
 
   @override
@@ -88,11 +94,15 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
                   isLoading = false;
                   isConnectedKafkaBrokers = true;
                 });
+                _showToast(
+                    "Connected to kafka borkers successfully", "success");
               } catch (e) {
                 setState(() {
                   isLoading = false;
                   isConnectedKafkaBrokers = false;
                 });
+
+                _showToast("Connect to kafka broker failed", "error");
               } finally {
                 setState(() {
                   displayConnectBrokerResult = true;
@@ -122,11 +132,6 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Connected to Kafka brokers successfully",
-              style: TextStyle(color: Colors.green),
-            ),
-            const SizedBox(height: 7),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -140,10 +145,46 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
         ),
       );
     } else {
-      return const Text(
-        "Cannot connect to kafka brokers",
-        style: TextStyle(color: Colors.red),
-      );
+      return Container();
     }
+  }
+
+  _showToast(String message, String toastType) {
+    late MaterialAccentColor color;
+    switch (toastType) {
+      case "error":
+        color = Colors.redAccent;
+        break;
+      case "success":
+        color = Colors.greenAccent;
+      case "warning":
+        color = Colors.orangeAccent;
+      default:
+        color = Colors.cyanAccent;
+    }
+
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: color,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.check),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(message),
+        ],
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: const Duration(seconds: 2),
+    );
   }
 }
