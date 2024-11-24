@@ -10,6 +10,11 @@ curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/lin
 echo 'export PATH="/usr/bin/flutter/bin:$PATH"' >> ~/.profile
 ```
 
+## Development tools
+To develop Flutter on Linux 
+``` sh
+sudo apt install clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+```
 
 ## Run project
 ``` 
