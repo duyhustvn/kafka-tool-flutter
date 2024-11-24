@@ -33,5 +33,5 @@ sudo cp -R build/linux/x64/release/bundle /opt/KafkaTool
 - Copy desktop entry file 
 
 ```
-cp kafka_tool.desktop ~/.local/share/applications/
+cp kafka_tool.desktop /usr/share/applications/
 ```
