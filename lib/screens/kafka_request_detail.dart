@@ -40,6 +40,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
         requestController.text = selectedRequest.title;
         topicController.text = selectedRequest.topic;
         numMessageController.text = selectedRequest.quantity.toString();
+        messageBodyController.text = selectedRequest.message;
       }
 
       return Padding(
@@ -97,6 +98,55 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
                 const SizedBox(width: 7),
               ],
             ),
+            const SizedBox(height: 7),
+            TextFormField(
+              maxLines: 5,
+              controller: messageBodyController,
+              decoration: InputDecoration(
+                labelText: 'Message',
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+            ),
+            const SizedBox(height: 7),
+            // Reponse
+            TextFormField(
+              maxLines: 3,
+              controller: responseController,
+              decoration: InputDecoration(
+                labelText: 'Response',
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+            ),
+            const SizedBox(height: 7),
+
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              // Button save request
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text("Save"),
+              ),
+              //
+              const SizedBox(width: 5),
+              // Button publish messages
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text("Publish"),
+              ),
+            ]),
           ],
         ),
       );
