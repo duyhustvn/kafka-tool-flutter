@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/request.dart';
 import '../repositories/request_repository.dart';
@@ -28,8 +29,9 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
     }
   }
 
-  Future<void> _onSelectRequest(
-      SelectRequest event, Emitter<RequestState> emit) async {
+  void _onSelectRequest(SelectRequest event, Emitter<RequestState> emit) {
+    debugPrint(
+        '_onSelectRequest event select request with id: ${event.requestId}');
     emit(state.copyWith(selectedRequestId: event.requestId));
   }
 }

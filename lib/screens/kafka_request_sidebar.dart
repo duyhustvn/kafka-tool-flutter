@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kafka_tool/bloc/request_bloc.dart';
 
@@ -28,6 +27,7 @@ class KafkaRequestSidebar extends StatelessWidget {
                   // },
                 ),
                 onTap: () {
+                  debugPrint('select request with id: ${request.id}');
                   context.read<RequestBloc>().add(SelectRequest(request.id));
                   Navigator.pop(context);
                 },
