@@ -23,7 +23,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
   ) async {
     try {
       final requests = await repository.fetchRequests();
-      emit(state.copyWith(requests: requests));
+      emit(state.copyWith(requests: requests.data?.requests));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }

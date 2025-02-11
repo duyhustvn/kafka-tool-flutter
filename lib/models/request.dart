@@ -14,15 +14,16 @@ class Request {
       required this.type,
       required this.message});
 
-  // factory Request.fromJson(Map<String, dynamic> json) {
-  //   return Request(
-  //       id: json['id'],
-  //       title: json['title'],
-  //       topic: json['topic'],
-  //       quantity: json['quantity'],
-  //       type: json['type'],
-  //       message: json['message']);
-  // }
+  // create Request instance from a JSON map
+  factory Request.fromJson(Map<String, dynamic> json) {
+    return Request(
+        id: json['id'],
+        title: json['title'],
+        topic: json['topic'],
+        quantity: json['quantity'],
+        type: json['type'],
+        message: json['message']);
+  }
 
   Request copyWith(
       {String? id,
