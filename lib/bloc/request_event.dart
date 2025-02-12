@@ -18,3 +18,10 @@ class SelectRequest extends RequestEvent {
 }
 
 // TODO: add 2 new event update request name and request content
+class UpdateContentRequest extends RequestEvent {
+  final Request updatedRequest;
+  const UpdateContentRequest(this.updatedRequest);
+
+  @override
+  List<Object?> get props => [updatedRequest];
+}

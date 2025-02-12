@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kafka_tool/api/request_update_api.dart';
 import 'package:kafka_tool/bloc/request_bloc.dart';
+import 'package:kafka_tool/models/request.dart';
 
 class KafkaRequestDetail extends StatefulWidget {
   const KafkaRequestDetail({super.key});
@@ -16,6 +18,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
   final requestController = TextEditingController();
   final topicController = TextEditingController();
   final responseController = TextEditingController();
+  late Request currentItem;
 
   @override
   void dispose() {
@@ -32,6 +35,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
   Widget build(BuildContext context) {
     return BlocBuilder<RequestBloc, RequestState>(builder: (context, state) {
       final selectedRequest = state.selectedRequest;
+
       if (selectedRequest == null) {
         return const Center(child: Text('Select and item from sidebar'));
       } else {
@@ -41,6 +45,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
         topicController.text = selectedRequest.topic;
         numMessageController.text = selectedRequest.quantity.toString();
         messageBodyController.text = selectedRequest.message;
+        currentItem = selectedRequest;
       }
 
       return Padding(
@@ -136,7 +141,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               // Button save request
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _updateRequest(context),
                 child: const Text("Save"),
               ),
               //
@@ -151,5 +156,23 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
         ),
       );
     });
+  }
+
+  void _updateRequest(BuildContext context) {
+    Request updatedRequest = currentItem.copyWith(
+      id: currentItem.id,
+      title: requestController.text,
+      topic: topicController.text,
+      quantity: int.parse(numMessageController.text),
+      message: messageBodyController.text,
+    );
+
+    if (updatedRequest != currentItem) {
+      context.read<RequestBloc>().add(UpdateContentRequest(updatedRequest));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No changes detected')),
+      );
+    }
   }
 }

@@ -1,9 +1,10 @@
-class Request {
+import 'package:equatable/equatable.dart';
+
+class Request extends Equatable {
   final String id;
   final String title;
   final String topic;
   final int quantity;
-  final String type;
   final String message;
 
   const Request(
@@ -11,7 +12,6 @@ class Request {
       required this.title,
       required this.topic,
       required this.quantity,
-      required this.type,
       required this.message});
 
   // create Request instance from a JSON map
@@ -21,7 +21,6 @@ class Request {
         title: json['title'],
         topic: json['topic'],
         quantity: json['quantity'],
-        type: json['type'],
         message: json['message']);
   }
 
@@ -30,15 +29,17 @@ class Request {
       String? title,
       String? topic,
       int? quantity,
-      String? type,
       String? message}) {
     return Request(
       id: id ?? this.id,
       title: title ?? this.title,
       topic: topic ?? this.topic,
       quantity: quantity ?? this.quantity,
-      type: type ?? this.type,
       message: message ?? this.message,
     );
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [id, title, topic, quantity, message];
 }
