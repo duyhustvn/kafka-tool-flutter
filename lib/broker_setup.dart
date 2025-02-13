@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 // API
 import 'package:kafka_tool/api/broker_connect_api.dart';
+import 'package:kafka_tool/bloc/broker_bloc.dart';
 // UI
-import 'package:kafka_tool/kafka_main.dart';
+import 'package:kafka_tool/screens/kafka_request_detail.dart';
+import 'package:kafka_tool/screens/kafka_request_screen.dart';
 
 class BrokerSetupScreen extends StatelessWidget {
   const BrokerSetupScreen({super.key});
@@ -114,41 +117,80 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
             child: const Text("Connect"),
           ),
           const SizedBox(height: 7),
-          _toggleNextButton(context),
+          // _toggleNextButton(context),
+          BlocBuilder<BrokerBloc, BrokerState>(
+            builder: (context, state) {
+              if (!displayConnectBrokerResult) {
+                return Container();
+              }
+
+              if (isLoading) {
+                return const CircularProgressIndicator();
+              }
+
+              if (isConnectedKafkaBrokers) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const KafkaRequestScreen()),
+                          );
+                        },
+                        child: const Text("Next"),
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            },
+          )
         ],
       ),
     );
   }
 
   Widget _toggleNextButton(BuildContext context) {
-    if (!displayConnectBrokerResult) {
-      return Container();
-    }
+    return BlocBuilder<BrokerBloc, BrokerState>(
+      builder: (context, state) {
+        if (!displayConnectBrokerResult) {
+          return Container();
+        }
 
-    if (isLoading) {
-      return const CircularProgressIndicator();
-    }
+        if (isLoading) {
+          return const CircularProgressIndicator();
+        }
 
-    if (isConnectedKafkaBrokers) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const KafkaTabBar()),
-                );
-              },
-              child: const Text("Next"),
-            )
-          ],
-        ),
-      );
-    } else {
-      return Container();
-    }
+        if (isConnectedKafkaBrokers) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const KafkaRequestDetail()),
+                    );
+                  },
+                  child: const Text("Next"),
+                )
+              ],
+            ),
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 
   _showToast(String message, String toastType) {

@@ -20,11 +20,6 @@ class KafkaRequestSidebar extends StatelessWidget {
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                   ),
-                  // onChanged: (newName) {
-                  //   context.read<RequestBloc>().add(
-                  //         UpdateRequestName(request.id, newName),
-                  //       );
-                  // },
                 ),
                 onTap: () {
                   debugPrint('select request with id: ${request.id}');

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kafka_tool/bloc/broker_bloc.dart';
 import 'package:kafka_tool/bloc/request_bloc.dart';
+import 'package:kafka_tool/broker_setup.dart';
+import 'package:kafka_tool/repositories/broker_repository.dart';
 import 'package:kafka_tool/repositories/request_repository.dart';
-import 'package:kafka_tool/screens/kafka_request_screen.dart';
 
 // class MainApp extends StatelessWidget {
 //   const MainApp({super.key});
@@ -25,10 +27,11 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: "Kafka Tool",
       home: BlocProvider(
-        create: (context) => RequestBloc(
-          repository: RequestRepository(),
-        )..add(LoadRequests()),
-        child: const KafkaRequestScreen(),
+        create: (context) => BrokerBloc(
+          repository: BrokerRepository(),
+        ),
+        // child: const KafkaRequestScreen(),
+        child: const BrokerSetupScreen(),
       ),
     );
   }
