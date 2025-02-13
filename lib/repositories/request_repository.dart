@@ -6,6 +6,7 @@ import 'package:kafka_tool/api/base.dart';
 import 'package:kafka_tool/models/request.dart';
 
 import '../models/list_request_response.dart';
+import '../models/public_message_response.dart';
 
 class RequestRepository {
   Future<ListRequestAPIResponse> fetchRequests() async {
@@ -49,5 +50,30 @@ class RequestRepository {
     } else {
       throw Exception('Failed to update request');
     }
+  }
+
+/* Call /publish API to send message*/
+  Future<PublishMsgAPIResponse> publish(
+      String message, int numOfMsg, String topic) async {
+    Map<String, String> headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+    Uri url = Uri.parse("$kafkaToolURL/kafka/publish");
+    final response = await http
+        .post(
+          url,
+          headers: headers,
+          body: jsonEncode(<String, dynamic>{
+            'message': message,
+            'topic': topic,
+            'quantity': numOfMsg,
+          }),
+        )
+        .timeout(const Duration(seconds: 60));
+
+    PublishMsgAPIResponse res =
+        PublishMsgAPIResponse.fromJson(jsonDecode(response.body));
+
+    return res;
   }
 }

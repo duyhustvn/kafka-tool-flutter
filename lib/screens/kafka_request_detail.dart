@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kafka_tool/api/request_update_api.dart';
+import 'package:kafka_tool/api/publish_msg_api.dart';
 import 'package:kafka_tool/bloc/request_bloc.dart';
 import 'package:kafka_tool/models/request.dart';
+import 'package:kafka_tool/repositories/request_repository.dart';
 
 class KafkaRequestDetail extends StatefulWidget {
   const KafkaRequestDetail({super.key});
@@ -148,7 +149,27 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
               const SizedBox(width: 5),
               // Button publish messages
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  responseController.text = "";
+                  try {
+                    var numOfMsg = int.parse(numMessageController.text);
+                    String message = messageBodyController.text;
+                    String topic = topicController.text;
+
+                    RequestRepository repo = RequestRepository();
+
+                    var res = await repo.publish(message, numOfMsg, topic);
+                    if (res.status == "ok") {
+                      responseController.text =
+                          "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
+                    } else {
+                      responseController.text = res.msg.toString();
+                    }
+                  } catch (e) {
+                    responseController.text =
+                        'There is an error happened. Please check the connection with API';
+                  }
+                },
                 child: const Text("Publish"),
               ),
             ]),
@@ -175,4 +196,14 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
       );
     }
   }
+
+  // void _publishMessage(BuildContext context) {
+  //   Request updatedRequest = currentItem.copyWith(
+  //     id: currentItem.id,
+  //     title: requestController.text,
+  //     topic: topicController.text,
+  //     quantity: int.parse(numMessageController.text),
+  //     message: messageBodyController.text,
+  //   );
+  // }
 }
