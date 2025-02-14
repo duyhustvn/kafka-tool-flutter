@@ -20,7 +20,6 @@ class KafkaRequestSidebar extends StatelessWidget {
               selectedTileColor:
                   ThemeData().highlightColor, // Text color when selected
               onTap: () {
-                debugPrint('select request with id: ${request.id}');
                 context.read<RequestBloc>().add(SelectRequest(request.id));
                 // Navigator.pop(context);
               },

@@ -222,9 +222,10 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
+    final requestBloc = context.read<RequestBloc>();
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Confirm Delete'),
           content: const Text('Are you sure you want to delete this item?'),
@@ -232,14 +233,15 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
             TextButton(
               child: const Text('No'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(dialogContext).pop(); // Close the dialog
               },
             ),
             TextButton(
               child: const Text('Yes'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                // TODO: handle delete
+                Navigator.of(dialogContext).pop(); // Close the dialog
+                int requestId = int.parse(currentItem.id);
+                requestBloc.add(DeleteRequestEvent(requestId));
               },
             ),
           ],

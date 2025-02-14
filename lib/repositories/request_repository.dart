@@ -60,7 +60,6 @@ class RequestRepository {
 
   // UPDATE
   Future<dynamic> updateRequest(Request request) async {
-    debugPrint("$kafkaToolURL/kafka/requests/${request.id}");
     Uri url = Uri.parse("$kafkaToolURL/kafka/requests/${request.id}");
     Map<String, String> headers = {
       'Content-Type': 'application/json; charset=UTF-8',
@@ -76,6 +75,26 @@ class RequestRepository {
             'quantity': request.quantity,
             'message': request.message,
           }),
+        )
+        .timeout(const Duration(seconds: 30));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to update request');
+    }
+  }
+
+  Future<dynamic> deleteRequest(int requestID) async {
+    Uri url = Uri.parse("$kafkaToolURL/kafka/requests/$requestID");
+    Map<String, String> headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+
+    final response = await http
+        .delete(
+          url,
+          headers: headers,
         )
         .timeout(const Duration(seconds: 30));
 

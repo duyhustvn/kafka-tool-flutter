@@ -18,6 +18,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
     on<SelectRequest>(_onSelectRequest);
     on<UpdateContentRequest>(_onUpdateRequest);
     on<CreateRequest>(_onCreateRequest);
+    on<DeleteRequestEvent>(_onDeleteRequest);
   }
 
   Future<void> _onLoadRequests(
@@ -26,7 +27,6 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
   ) async {
     try {
       final requests = await repository.fetchRequests();
-      debugPrint("emit load request");
       emit(state.copyWith(requests: requests.data?.requests));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
@@ -79,6 +79,22 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
       );
       final newRequests = [...state.requests, newlyCreatedRequest];
       emit(state.copyWith(requests: newRequests));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteRequest(
+    DeleteRequestEvent event,
+    Emitter<RequestState> emit,
+  ) async {
+    try {
+      int requestId = event.requestId;
+      await repository.deleteRequest(requestId);
+      final remainingRequest = state.requests
+          .where((request) => request.id != requestId.toString())
+          .toList();
+      emit(state.copyWith(requests: remainingRequest));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
