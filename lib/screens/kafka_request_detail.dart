@@ -60,7 +60,11 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
               const SizedBox(width: 5),
               // Button publish messages
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _showDeleteConfirmation(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text("Delete"),
               ),
             ]),
@@ -79,8 +83,6 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
                   ),
                 ),
                 const SizedBox(width: 7),
-                // TODO: update it to select topic from list topic
-                //
                 Expanded(
                   child: TextFormField(
                     controller: topicController,
@@ -217,5 +219,32 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
         const SnackBar(content: Text('No changes detected')),
       );
     }
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this item?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                // TODO: handle delete
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

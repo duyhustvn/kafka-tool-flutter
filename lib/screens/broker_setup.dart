@@ -138,8 +138,8 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const KafkaRequestScreen()),
+                                builder: (context) => KafkaRequestScreen(
+                                    brokerName: brokersController.text)),
                           );
                         },
                         child: const Text("Next"),

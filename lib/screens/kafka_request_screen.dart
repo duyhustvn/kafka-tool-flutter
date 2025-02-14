@@ -6,7 +6,9 @@ import 'package:kafka_tool/screens/kafka_request_detail.dart';
 import 'package:kafka_tool/screens/kafka_request_sidebar.dart';
 
 class KafkaRequestScreen extends StatelessWidget {
-  const KafkaRequestScreen({super.key});
+  final String brokerName;
+
+  const KafkaRequestScreen({super.key, required this.brokerName});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,11 @@ class KafkaRequestScreen extends StatelessWidget {
       create: (context) =>
           RequestBloc(repository: RequestRepository())..add(LoadRequests()),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Kafka Tool')),
+        // center the app bar
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(brokerName),
+        ),
         body: LayoutBuilder(
           builder: (context, constraints) {
             return Row(
