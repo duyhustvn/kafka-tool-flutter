@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:kafka_tool/broker_setup.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kafka_tool/bloc/broker_bloc.dart';
+import 'package:kafka_tool/screens/broker_setup.dart';
+import 'package:kafka_tool/repositories/broker_repository.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -8,9 +10,14 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      builder: FToastBuilder(),
-      theme: ThemeData(useMaterial3: true),
-      home: const BrokerSetupScreen(),
+      title: "Kafka Tool",
+      home: BlocProvider(
+        create: (context) => BrokerBloc(
+          repository: BrokerRepository(),
+        ),
+        // child: const KafkaRequestScreen(),
+        child: const BrokerSetupScreen(),
+      ),
     );
   }
 }

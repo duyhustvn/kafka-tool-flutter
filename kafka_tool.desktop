@@ -4,8 +4,8 @@
 Version=1.0
 Type=Application
 Name=KafkaTool
-Exec=/opt/KafkaTool/kafka_tool
-Icon=/home/$USER/.icons/flutter.png
+Exec=/opt/KafkaTool/bundle/kafka_tool
+Icon=/opt/KafkaTool/bundle/icons/kafka.png
 Comment=kafka tool
 Categories=Development
 Terminal=false

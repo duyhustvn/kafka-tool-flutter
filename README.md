@@ -30,8 +30,11 @@ flutter build linux --release
 ``` 
 sudo cp -R build/linux/x64/release/bundle /opt/KafkaTool
 ```
-- Copy desktop entry file 
-
+- Install the desktop entry file (it will installed into folder /usr/share/applications)
 ```
-cp kafka_tool.desktop /usr/share/applications/
+sudo desktop-file-install ./kafka_tool.desktop
+```
+- Update desktop database
+```
+sudo update-desktop-database
 ```
