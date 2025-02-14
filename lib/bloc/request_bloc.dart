@@ -34,8 +34,6 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
   }
 
   void _onSelectRequest(SelectRequest event, Emitter<RequestState> emit) {
-    debugPrint(
-        '_onSelectRequest event select request with id: ${event.requestId}');
     emit(state.copyWith(selectedRequestId: event.requestId));
   }
 

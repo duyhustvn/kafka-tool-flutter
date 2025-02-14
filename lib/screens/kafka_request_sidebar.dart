@@ -7,24 +7,27 @@ class KafkaRequestSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: BlocBuilder<RequestBloc, RequestState>(
-        builder: (context, state) {
-          return ListView.builder(
-            itemCount: state.requests.length,
-            itemBuilder: (context, index) {
-              final request = state.requests[index];
-              return ListTile(
-                title: Text(request.title),
-                onTap: () {
-                  context.read<RequestBloc>().add(SelectRequest(request.id));
-                  Navigator.pop(context);
-                },
-              );
-            },
-          );
-        },
-      ),
+    return BlocBuilder<RequestBloc, RequestState>(
+      builder: (context, state) {
+        return ListView.builder(
+          itemCount: state.requests.length,
+          itemBuilder: (context, index) {
+            final request = state.requests[index];
+            final isSelected = request.id == state.selectedRequestId;
+            return ListTile(
+              title: Text(request.title),
+              selected: isSelected,
+              selectedTileColor:
+                  ThemeData().highlightColor, // Text color when selected
+              onTap: () {
+                debugPrint('select request with id: ${request.id}');
+                context.read<RequestBloc>().add(SelectRequest(request.id));
+                // Navigator.pop(context);
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

@@ -39,8 +39,6 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
       if (selectedRequest == null) {
         return const Center(child: Text('Select and item from sidebar'));
       } else {
-        debugPrint(
-            'Detail request with id: ${selectedRequest.id} and title: ${selectedRequest.title}');
         requestController.text = selectedRequest.title;
         topicController.text = selectedRequest.topic;
         numMessageController.text = selectedRequest.quantity.toString();
@@ -56,18 +54,18 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
               // Button save request
               ElevatedButton(
                 onPressed: () => _createNewRequest(context),
-                child: const Text("New"),
+                child: const Text("Duplicate"),
               ),
               //
               const SizedBox(width: 5),
               // Button publish messages
               ElevatedButton(
-                onPressed: () async {},
+                onPressed: () {},
                 child: const Text("Delete"),
               ),
             ]),
 
-            const SizedBox(height: 7),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -120,7 +118,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
             ),
             const SizedBox(height: 7),
             TextFormField(
-              maxLines: 5,
+              maxLines: 20,
               controller: messageBodyController,
               decoration: InputDecoration(
                 labelText: 'Message',
@@ -137,7 +135,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
             const SizedBox(height: 7),
             // Reponse
             TextFormField(
-              maxLines: 3,
+              maxLines: 5,
               controller: responseController,
               decoration: InputDecoration(
                 labelText: 'Response',

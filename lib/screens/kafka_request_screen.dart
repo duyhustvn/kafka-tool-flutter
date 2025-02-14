@@ -15,15 +15,22 @@ class KafkaRequestScreen extends StatelessWidget {
           RequestBloc(repository: RequestRepository())..add(LoadRequests()),
       child: Scaffold(
         appBar: AppBar(title: const Text('Kafka Tool')),
-        drawer: const KafkaRequestSidebar(),
-        body: BlocListener<RequestBloc, RequestState>(
-          listener: (context, state) {
-            if (state.error != null) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.error!)));
-            }
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return Row(
+              children: [
+                SizedBox(
+                  width: constraints.maxWidth * 0.2, // 20% of available width,
+                  child: const KafkaRequestSidebar(),
+                ),
+                Expanded(
+                  child: const SingleChildScrollView(
+                    child: KafkaRequestDetail(),
+                  ),
+                ),
+              ],
+            );
           },
-          child: const KafkaRequestDetail(),
         ),
       ),
     );
