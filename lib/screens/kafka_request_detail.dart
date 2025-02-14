@@ -52,6 +52,21 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
         padding: const EdgeInsets.symmetric(horizontal: 50),
         child: Column(
           children: [
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              // Button save request
+              ElevatedButton(
+                onPressed: () => _createNewRequest(context),
+                child: const Text("New"),
+              ),
+              //
+              const SizedBox(width: 5),
+              // Button publish messages
+              ElevatedButton(
+                onPressed: () async {},
+                child: const Text("Delete"),
+              ),
+            ]),
+
             const SizedBox(height: 7),
             Row(
               children: [
@@ -176,6 +191,16 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
         ),
       );
     });
+  }
+
+  void _createNewRequest(BuildContext context) {
+    Request newRequest = currentItem.copyWith(
+      title: requestController.text,
+      topic: topicController.text,
+      quantity: int.parse(numMessageController.text),
+      message: messageBodyController.text,
+    );
+    context.read<RequestBloc>().add(CreateRequest(newRequest));
   }
 
   void _updateRequest(BuildContext context) {

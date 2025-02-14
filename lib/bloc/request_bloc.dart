@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:kafka_tool/models/create_new_request_response.dart';
 
 import '../models/request.dart';
 import '../repositories/request_repository.dart';
@@ -63,14 +64,22 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
   ) async {
     try {
       Request newRequest = event.newRequest;
-      await repository.createRequest(
+      CreateNewRequestAPIResponse res = await repository.createRequest(
         newRequest.title,
         newRequest.topic,
         newRequest.quantity,
         newRequest.message,
       );
+      String newRequestId = res.data!.newRequestId.toString();
 
-      final newRequests = [...state.requests, newRequest];
+      Request newlyCreatedRequest = newRequest.copyWith(
+        id: newRequestId,
+        title: newRequest.title,
+        topic: newRequest.topic,
+        quantity: newRequest.quantity,
+        message: newRequest.message,
+      );
+      final newRequests = [...state.requests, newlyCreatedRequest];
       emit(state.copyWith(requests: newRequests));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));

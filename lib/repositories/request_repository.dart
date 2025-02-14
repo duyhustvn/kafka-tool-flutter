@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kafka_tool/models/create_new_request_response.dart';
 import 'package:kafka_tool/repositories/base.dart';
 import 'package:kafka_tool/models/request.dart';
 
@@ -34,7 +35,7 @@ class RequestRepository {
         .timeout(const Duration(seconds: 60));
 
     if (response.statusCode == 200) {
-      return true;
+      return CreateNewRequestAPIResponse.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to save request');
     }
