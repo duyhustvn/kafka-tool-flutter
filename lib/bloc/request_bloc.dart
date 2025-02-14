@@ -16,6 +16,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
     on<LoadRequests>(_onLoadRequests);
     on<SelectRequest>(_onSelectRequest);
     on<UpdateContentRequest>(_onUpdateRequest);
+    on<CreateRequest>(_onCreateRequest);
   }
 
   Future<void> _onLoadRequests(
@@ -42,11 +43,8 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
     Emitter<RequestState> emit,
   ) async {
     try {
-      debugPrint("_onUpdateRequest id: ${event.updatedRequest.id}");
-
       await repository.updateRequest(event.updatedRequest);
-      // TODO: update this
-      // emit(state.copyWith(requests: requests.data?.requests));
+
       final updateRequests = state.requests.map((request) {
         return request.id == event.updatedRequest.id
             ? event.updatedRequest
@@ -54,6 +52,26 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
       }).toList();
 
       emit(state.copyWith(requests: updateRequests));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> _onCreateRequest(
+    CreateRequest event,
+    Emitter<RequestState> emit,
+  ) async {
+    try {
+      Request newRequest = event.newRequest;
+      await repository.createRequest(
+        newRequest.title,
+        newRequest.topic,
+        newRequest.quantity,
+        newRequest.message,
+      );
+
+      final newRequests = [...state.requests, newRequest];
+      emit(state.copyWith(requests: newRequests));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }

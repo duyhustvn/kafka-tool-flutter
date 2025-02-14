@@ -195,14 +195,4 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
       );
     }
   }
-
-  // void _publishMessage(BuildContext context) {
-  //   Request updatedRequest = currentItem.copyWith(
-  //     id: currentItem.id,
-  //     title: requestController.text,
-  //     topic: topicController.text,
-  //     quantity: int.parse(numMessageController.text),
-  //     message: messageBodyController.text,
-  //   );
-  // }
 }

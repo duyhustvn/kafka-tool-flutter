@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:kafka_tool/api/base.dart';
+import 'package:kafka_tool/repositories/base.dart';
 
 class BrokerRepository {
   Future<dynamic> connectKafkaBrokers(String brokers) async {
