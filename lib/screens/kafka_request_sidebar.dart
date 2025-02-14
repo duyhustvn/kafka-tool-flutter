@@ -15,14 +15,8 @@ class KafkaRequestSidebar extends StatelessWidget {
             itemBuilder: (context, index) {
               final request = state.requests[index];
               return ListTile(
-                title: TextFormField(
-                  initialValue: request.title,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                ),
+                title: Text(request.title),
                 onTap: () {
-                  debugPrint('select request with id: ${request.id}');
                   context.read<RequestBloc>().add(SelectRequest(request.id));
                   Navigator.pop(context);
                 },
