@@ -18,7 +18,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
   final requestController = TextEditingController();
   final topicController = TextEditingController();
   final responseController = TextEditingController();
-  late Request currentItem;
+  Request? currentItem;
 
   @override
   void dispose() {
@@ -36,9 +36,7 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
     return BlocBuilder<RequestBloc, RequestState>(builder: (context, state) {
       final selectedRequest = state.selectedRequest;
 
-      if (selectedRequest == null) {
-        return const Center(child: Text('Select and item from sidebar'));
-      } else {
+      if (selectedRequest != null) {
         requestController.text = selectedRequest.title;
         topicController.text = selectedRequest.topic;
         numMessageController.text = selectedRequest.quantity.toString();
@@ -194,7 +192,9 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
   }
 
   void _createNewRequest(BuildContext context) {
-    Request newRequest = currentItem.copyWith(
+    Request newRequest;
+    newRequest = Request(
+      id: "-1", // id is required field, but will not be used in create new request so set to -1 to bypass
       title: requestController.text,
       topic: topicController.text,
       quantity: int.parse(numMessageController.text),
@@ -204,20 +204,24 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
   }
 
   void _updateRequest(BuildContext context) {
-    Request updatedRequest = currentItem.copyWith(
-      id: currentItem.id,
-      title: requestController.text,
-      topic: topicController.text,
-      quantity: int.parse(numMessageController.text),
-      message: messageBodyController.text,
-    );
-
-    if (updatedRequest != currentItem) {
-      context.read<RequestBloc>().add(UpdateContentRequest(updatedRequest));
+    if (currentItem == null) {
+      _createNewRequest(context);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No changes detected')),
+      Request updatedRequest = currentItem!.copyWith(
+        id: currentItem?.id,
+        title: requestController.text,
+        topic: topicController.text,
+        quantity: int.parse(numMessageController.text),
+        message: messageBodyController.text,
       );
+
+      if (updatedRequest != currentItem) {
+        context.read<RequestBloc>().add(UpdateContentRequest(updatedRequest));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No changes detected')),
+        );
+      }
     }
   }
 
@@ -240,8 +244,13 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
               child: const Text('Yes'),
               onPressed: () {
                 Navigator.of(dialogContext).pop(); // Close the dialog
-                int requestId = int.parse(currentItem.id);
+                int requestId = int.parse(currentItem!.id);
                 requestBloc.add(DeleteRequestEvent(requestId));
+                currentItem = null;
+                requestController.text = "";
+                topicController.text = "";
+                numMessageController.text = "";
+                messageBodyController.text = "";
               },
             ),
           ],
