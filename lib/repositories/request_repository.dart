@@ -112,7 +112,12 @@ class RequestRepository {
 
 /* Call /publish API to send message*/
   Future<PublishMsgAPIResponse> publish(
-      String message, int numOfMsg, String topic) async {
+    String message,
+    String msgHeader,
+    String msgKey,
+    int numOfMsg,
+    String topic,
+  ) async {
     Map<String, String> headers = {
       'Content-Type': 'application/json; charset=UTF-8',
     };
@@ -123,6 +128,8 @@ class RequestRepository {
           headers: headers,
           body: jsonEncode(<String, dynamic>{
             'message': message,
+            'header': msgHeader,
+            'key': msgKey,
             'topic': topic,
             'quantity': numOfMsg,
           }),

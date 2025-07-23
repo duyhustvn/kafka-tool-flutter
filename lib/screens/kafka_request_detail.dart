@@ -204,11 +204,14 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
                   try {
                     var numOfMsg = int.parse(numMessageController.text);
                     String message = messageBodyController.text;
+                    String msgHeader = messageHeaderController.text;
+                    String msgKey = messageKeyController.text;
                     String topic = topicController.text;
 
                     RequestRepository repo = RequestRepository();
 
-                    var res = await repo.publish(message, numOfMsg, topic);
+                    var res = await repo.publish(
+                        message, msgHeader, msgKey, numOfMsg, topic);
                     if (res.status == "ok") {
                       responseController.text =
                           "total message: ${res.data?.totalMessage} \nsuccess: ${res.data?.success} \nfailed: ${res.data?.failed}";
