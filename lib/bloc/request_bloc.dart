@@ -67,6 +67,8 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
         newRequest.topic,
         newRequest.quantity,
         newRequest.message,
+        newRequest.header,
+        newRequest.key,
       );
       String newRequestId = res.data!.newRequestId.toString();
 

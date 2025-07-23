@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kafka_tool/models/create_new_request_response.dart';
 import 'package:kafka_tool/repositories/base.dart';
@@ -16,6 +15,8 @@ class RequestRepository {
     String topic,
     int numOfMsg,
     String message,
+    String msgHeader,
+    String msgKey,
   ) async {
     Uri url = Uri.parse("$kafkaToolURL/kafka/requests");
     Map<String, String> headers = {
@@ -30,6 +31,8 @@ class RequestRepository {
             'topic': topic,
             'quantity': numOfMsg,
             'message': message,
+            'header': msgHeader,
+            'key': msgKey,
           }),
         )
         .timeout(const Duration(seconds: 60));
@@ -74,6 +77,8 @@ class RequestRepository {
             'topic': request.topic,
             'quantity': request.quantity,
             'message': request.message,
+            'header': request.header,
+            'key': request.key,
           }),
         )
         .timeout(const Duration(seconds: 30));

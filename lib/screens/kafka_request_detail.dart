@@ -14,6 +14,8 @@ class KafkaRequestDetail extends StatefulWidget {
 
 class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
   final messageBodyController = TextEditingController();
+  final messageHeaderController = TextEditingController();
+  final messageKeyController = TextEditingController();
   final numMessageController = TextEditingController();
   final requestController = TextEditingController();
   final topicController = TextEditingController();
@@ -24,6 +26,8 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
   void dispose() {
     // Clean up the controller when the widget is removed from the widget tree.
     messageBodyController.dispose();
+    messageHeaderController.dispose();
+    messageKeyController.dispose();
     numMessageController.dispose();
     requestController.dispose();
     topicController.dispose();
@@ -41,6 +45,8 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
         topicController.text = selectedRequest.topic;
         numMessageController.text = selectedRequest.quantity.toString();
         messageBodyController.text = selectedRequest.message;
+        messageHeaderController.text = selectedRequest.header;
+        messageKeyController.text = selectedRequest.key;
         currentItem = selectedRequest;
       }
 
@@ -115,6 +121,38 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
                 ),
                 const SizedBox(width: 7),
               ],
+            ),
+            const SizedBox(height: 7),
+            TextFormField(
+              maxLines: 5,
+              controller: messageKeyController,
+              decoration: InputDecoration(
+                labelText: 'Key',
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+            ),
+            const SizedBox(height: 7),
+            TextFormField(
+              maxLines: 5,
+              controller: messageHeaderController,
+              decoration: InputDecoration(
+                labelText: 'Header',
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
             ),
             const SizedBox(height: 7),
             TextFormField(
@@ -199,6 +237,8 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
       topic: topicController.text,
       quantity: int.parse(numMessageController.text),
       message: messageBodyController.text,
+      header: messageHeaderController.text,
+      key: messageKeyController.text,
     );
     context.read<RequestBloc>().add(CreateRequest(newRequest));
   }
@@ -213,6 +253,8 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
         topic: topicController.text,
         quantity: int.parse(numMessageController.text),
         message: messageBodyController.text,
+        header: messageHeaderController.text,
+        key: messageKeyController.text,
       );
 
       if (updatedRequest != currentItem) {
@@ -251,6 +293,8 @@ class _KafkaRequestDetailState extends State<KafkaRequestDetail> {
                 topicController.text = "";
                 numMessageController.text = "";
                 messageBodyController.text = "";
+                messageHeaderController.text = "";
+                messageKeyController.text = "";
               },
             ),
           ],
