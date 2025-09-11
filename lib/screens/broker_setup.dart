@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 // API
 import 'package:kafka_tool/api/broker_connect_api.dart';
 import 'package:kafka_tool/bloc/broker_bloc.dart';
+import 'package:kafka_tool/models/broker.dart';
 // UI
 import 'package:kafka_tool/screens/kafka_request_detail.dart';
 import 'package:kafka_tool/screens/kafka_request_screen.dart';
@@ -14,12 +15,8 @@ class BrokerSetupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Kafka Tool"),
-      ),
-      body: const Center(
-        child: BrokerSetupWidget(),
-      ),
+      appBar: AppBar(title: const Text("Kafka Tool")),
+      body: const Center(child: BrokerSetupWidget()),
     );
   }
 }
@@ -33,6 +30,8 @@ class BrokerSetupWidget extends StatefulWidget {
 
 class _BrokerSetupWidget extends State<BrokerSetupWidget> {
   final brokersController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
 
   bool isConnectedKafkaBrokers = false;
   bool displayConnectBrokerResult = false;
@@ -52,6 +51,8 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
   void dispose() {
     // Clean up the controller when the widget is removed from the widget tree.
     brokersController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -68,15 +69,11 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
             decoration: InputDecoration(
               labelText: 'Brokers',
               enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  width: 1,
-                ),
+                borderSide: const BorderSide(width: 1),
                 borderRadius: BorderRadius.circular(5.0),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  width: 1,
-                ),
+                borderSide: const BorderSide(width: 1),
                 borderRadius: BorderRadius.circular(5.0),
               ),
             ),
@@ -86,34 +83,85 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
               });
             },
           ),
+
+          const SizedBox(height: 7),
+          TextFormField(
+            maxLines: 1,
+            controller: usernameController,
+            decoration: InputDecoration(
+              labelText: 'Username',
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(width: 1),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(width: 1),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+            onChanged: (String text) async {
+              setState(() {
+                displayConnectBrokerResult = false;
+              });
+            },
+          ),
+
+          const SizedBox(height: 7),
+          TextFormField(
+            maxLines: 1,
+            controller: passwordController,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(width: 1),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(width: 1),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+            onChanged: (String text) async {
+              setState(() {
+                displayConnectBrokerResult = false;
+              });
+            },
+          ),
+
           const SizedBox(height: 7),
           ElevatedButton(
-            onPressed: () async {
-              try {
-                String brokers = brokersController.text;
-                setState(() {
-                  isLoading = true;
-                });
-                await connectKafkaBrokers(brokers);
-                setState(() {
-                  isLoading = false;
-                  isConnectedKafkaBrokers = true;
-                });
-                _showToast(
-                    "Connected to kafka borkers successfully", "success");
-              } catch (e) {
-                setState(() {
-                  isLoading = false;
-                  isConnectedKafkaBrokers = false;
-                });
+            // onPressed: () async {
+            //   try {
+            //     String brokers = brokersController.text;
+            //     String username = usernameController.text;
+            //     String password = passwordController.text;
 
-                _showToast("Connect to kafka broker failed", "error");
-              } finally {
-                setState(() {
-                  displayConnectBrokerResult = true;
-                });
-              }
-            },
+            //     setState(() {
+            //       isLoading = true;
+            //     });
+            //     await connectKafkaBrokers(brokers, username, password);
+            //     setState(() {
+            //       isLoading = false;
+            //       isConnectedKafkaBrokers = true;
+            //     });
+            //     _showToast(
+            //       "Connected to kafka borkers successfully",
+            //       "success",
+            //     );
+            //   } catch (e) {
+            //     setState(() {
+            //       isLoading = false;
+            //       isConnectedKafkaBrokers = false;
+            //     });
+
+            //     _showToast("Connect to kafka broker failed", "error");
+            //   } finally {
+            //     setState(() {
+            //       displayConnectBrokerResult = true;
+            //     });
+            //   }
+            // },
+            onPressed: () => _connectKafkaBroker(context),
             child: const Text("Connect"),
           ),
           const SizedBox(height: 7),
@@ -138,12 +186,14 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => KafkaRequestScreen(
-                                    brokerName: brokersController.text)),
+                              builder: (context) => KafkaRequestScreen(
+                                brokerName: brokersController.text,
+                              ),
+                            ),
                           );
                         },
                         child: const Text("Next"),
-                      )
+                      ),
                     ],
                   ),
                 );
@@ -151,7 +201,7 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
                 return Container();
               }
             },
-          )
+          ),
         ],
       ),
     );
@@ -178,11 +228,12 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const KafkaRequestDetail()),
+                        builder: (context) => const KafkaRequestDetail(),
+                      ),
                     );
                   },
                   child: const Text("Next"),
-                )
+                ),
               ],
             ),
           );
@@ -217,9 +268,7 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.check),
-          const SizedBox(
-            width: 12.0,
-          ),
+          const SizedBox(width: 12.0),
           Text(message),
         ],
       ),
@@ -230,5 +279,16 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
       gravity: ToastGravity.BOTTOM,
       toastDuration: const Duration(seconds: 2),
     );
+  }
+
+  void _connectKafkaBroker(BuildContext context) {
+    Broker broker;
+    broker = Broker(
+      broker_url: brokersController.text,
+      username: usernameController.text,
+      password: passwordController.text,
+    );
+
+    context.read<BrokerBloc>().add(ConnectBroker(broker));
   }
 }

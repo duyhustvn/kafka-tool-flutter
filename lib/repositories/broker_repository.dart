@@ -5,7 +5,11 @@ import 'dart:async';
 import 'package:kafka_tool/repositories/base.dart';
 
 class BrokerRepository {
-  Future<dynamic> connectKafkaBrokers(String brokers) async {
+  Future<dynamic> connectKafkaBrokers(
+    String brokers,
+    String username,
+    String password,
+  ) async {
     Uri url = Uri.parse("$kafkaToolURL/kafka/brokers/connect");
     Map<String, String> headers = {
       'Content-Type': 'application/json; charset=UTF-8',
@@ -16,6 +20,8 @@ class BrokerRepository {
           headers: headers,
           body: jsonEncode(<String, dynamic>{
             'brokers_url': brokers,
+            'username': username,
+            'password': password,
           }),
         )
         .timeout(const Duration(seconds: 60));

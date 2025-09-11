@@ -5,7 +5,7 @@ abstract class BrokerEvent extends Equatable {
 }
 
 class ConnectBroker extends BrokerEvent {
-  final String broker;
+  final Broker broker;
   const ConnectBroker(this.broker);
 
   @override

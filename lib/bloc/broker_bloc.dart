@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kafka_tool/repositories/broker_repository.dart';
+import 'package:kafka_tool/models/broker.dart';
 
 part 'broker_event.dart';
 part 'broker_state.dart';
@@ -17,8 +18,19 @@ class BrokerBloc extends Bloc<BrokerEvent, BrokerState> {
     Emitter<BrokerState> emit,
   ) async {
     try {
-      await repository.connectKafkaBrokers(event.broker);
-      emit(state.copyWith(broker: event.broker));
+      Broker broker = event.broker;
+      await repository.connectKafkaBrokers(
+        broker.broker_url,
+        broker.username,
+        broker.password,
+      );
+      emit(
+        state.copyWith(
+          broker: broker.broker_url,
+          username: broker.username,
+          password: broker.password,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
