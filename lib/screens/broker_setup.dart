@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 // API
-import 'package:kafka_tool/api/broker_connect_api.dart';
 import 'package:kafka_tool/bloc/broker_bloc.dart';
 import 'package:kafka_tool/models/broker.dart';
 // UI
@@ -156,42 +155,37 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
   }
 
   Widget _toggleNextButton(BuildContext context) {
-    return BlocBuilder<BrokerBloc, BrokerState>(
-      builder: (context, state) {
-        if (!displayConnectBrokerResult) {
-          return Container();
-        }
+    if (!displayConnectBrokerResult) {
+      return Container();
+    }
 
-        if (isLoading) {
-          return const CircularProgressIndicator();
-        }
+    if (isLoading) {
+      return const CircularProgressIndicator();
+    }
 
-        if (isConnectedKafkaBrokers) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => KafkaRequestScreen(
-                          brokerName: brokersController.text,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text("Next"),
-                ),
-              ],
+    if (isConnectedKafkaBrokers) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        KafkaRequestScreen(brokerName: brokersController.text),
+                  ),
+                );
+              },
+              child: const Text("Next"),
             ),
-          );
-        } else {
-          return Container();
-        }
-      },
-    );
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   _showToast(String message, String toastType) {
