@@ -58,153 +58,101 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 50),
-      child: Column(
-        children: [
-          const SizedBox(height: 7),
-          TextFormField(
-            maxLines: 1,
-            controller: brokersController,
-            decoration: InputDecoration(
-              labelText: 'Brokers',
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(width: 1),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(width: 1),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-            onChanged: (String text) async {
-              setState(() {
-                displayConnectBrokerResult = false;
-              });
-            },
-          ),
-
-          const SizedBox(height: 7),
-          TextFormField(
-            maxLines: 1,
-            controller: usernameController,
-            decoration: InputDecoration(
-              labelText: 'Username',
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(width: 1),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(width: 1),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-            onChanged: (String text) async {
-              setState(() {
-                displayConnectBrokerResult = false;
-              });
-            },
-          ),
-
-          const SizedBox(height: 7),
-          TextFormField(
-            maxLines: 1,
-            controller: passwordController,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(width: 1),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(width: 1),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-            onChanged: (String text) async {
-              setState(() {
-                displayConnectBrokerResult = false;
-              });
-            },
-          ),
-
-          const SizedBox(height: 7),
-          ElevatedButton(
-            // onPressed: () async {
-            //   try {
-            //     String brokers = brokersController.text;
-            //     String username = usernameController.text;
-            //     String password = passwordController.text;
-
-            //     setState(() {
-            //       isLoading = true;
-            //     });
-            //     await connectKafkaBrokers(brokers, username, password);
-            //     setState(() {
-            //       isLoading = false;
-            //       isConnectedKafkaBrokers = true;
-            //     });
-            //     _showToast(
-            //       "Connected to kafka borkers successfully",
-            //       "success",
-            //     );
-            //   } catch (e) {
-            //     setState(() {
-            //       isLoading = false;
-            //       isConnectedKafkaBrokers = false;
-            //     });
-
-            //     _showToast("Connect to kafka broker failed", "error");
-            //   } finally {
-            //     setState(() {
-            //       displayConnectBrokerResult = true;
-            //     });
-            //   }
-            // },
-            onPressed: () => _connectKafkaBroker(context),
-            child: const Text("Connect"),
-          ),
-          const SizedBox(height: 7),
-          // _toggleNextButton(context),
-          BlocBuilder<BrokerBloc, BrokerState>(
-            builder: (context, state) {
-              if (!displayConnectBrokerResult) {
-                return Container();
-              }
-
-              if (isLoading) {
-                return const CircularProgressIndicator();
-              }
-
-              if (isConnectedKafkaBrokers) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => KafkaRequestScreen(
-                                brokerName: brokersController.text,
-                              ),
-                            ),
-                          );
-                        },
-                        child: const Text("Next"),
-                      ),
-                    ],
+    return BlocBuilder<BrokerBloc, BrokerState>(
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+          child: Column(
+            children: [
+              const SizedBox(height: 7),
+              TextFormField(
+                maxLines: 1,
+                controller: brokersController,
+                decoration: InputDecoration(
+                  labelText: 'Brokers',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 1),
+                    borderRadius: BorderRadius.circular(5.0),
                   ),
-                );
-              } else {
-                return Container();
-              }
-            },
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 1),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+                onChanged: (String text) async {
+                  setState(() {
+                    displayConnectBrokerResult = false;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 7),
+              TextFormField(
+                maxLines: 1,
+                controller: usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 1),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 1),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+                onChanged: (String text) async {
+                  setState(() {
+                    displayConnectBrokerResult = false;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 7),
+              TextFormField(
+                maxLines: 1,
+                controller: passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 1),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 1),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+                onChanged: (String text) async {
+                  setState(() {
+                    displayConnectBrokerResult = false;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 7),
+              ElevatedButton(
+                onPressed: () => _connectKafkaBroker(context),
+                child: const Text("Connect"),
+              ),
+              const SizedBox(height: 7),
+              _toggleNextButton(context),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  void _connectKafkaBroker(BuildContext context) {
+    Broker broker;
+    broker = Broker(
+      broker_url: brokersController.text,
+      username: usernameController.text,
+      password: passwordController.text,
+    );
+
+    context.read<BrokerBloc>().add(ConnectBroker(broker));
   }
 
   Widget _toggleNextButton(BuildContext context) {
@@ -228,7 +176,9 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const KafkaRequestDetail(),
+                        builder: (context) => KafkaRequestScreen(
+                          brokerName: brokersController.text,
+                        ),
                       ),
                     );
                   },
@@ -279,16 +229,5 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
       gravity: ToastGravity.BOTTOM,
       toastDuration: const Duration(seconds: 2),
     );
-  }
-
-  void _connectKafkaBroker(BuildContext context) {
-    Broker broker;
-    broker = Broker(
-      broker_url: brokersController.text,
-      username: usernameController.text,
-      password: passwordController.text,
-    );
-
-    context.read<BrokerBloc>().add(ConnectBroker(broker));
   }
 }
