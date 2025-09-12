@@ -57,95 +57,125 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BrokerBloc, BrokerState>(
-      builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50),
-          child: Column(
-            children: [
-              const SizedBox(height: 7),
-              TextFormField(
-                maxLines: 1,
-                controller: brokersController,
-                decoration: InputDecoration(
-                  labelText: 'Brokers',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                onChanged: (String text) async {
-                  setState(() {
-                    displayConnectBrokerResult = false;
-                  });
-                },
-              ),
-
-              const SizedBox(height: 7),
-              TextFormField(
-                maxLines: 1,
-                controller: usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Username',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                onChanged: (String text) async {
-                  setState(() {
-                    displayConnectBrokerResult = false;
-                  });
-                },
-              ),
-
-              const SizedBox(height: 7),
-              TextFormField(
-                maxLines: 1,
-                controller: passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                onChanged: (String text) async {
-                  setState(() {
-                    displayConnectBrokerResult = false;
-                  });
-                },
-              ),
-
-              const SizedBox(height: 7),
-              ElevatedButton(
-                onPressed: () => _connectKafkaBroker(context),
-                child: const Text("Connect"),
-              ),
-              const SizedBox(height: 7),
-              _toggleNextButton(context),
-            ],
-          ),
-        );
+    return BlocListener<BrokerBloc, BrokerState>(
+      listener: (context, state) {
+        if (state.error != null) {
+          setState(() {
+            isLoading = false;
+            isConnectedKafkaBrokers = false;
+          });
+          _showToast(state.error!, "error");
+        } else if (state.broker != null) {
+          setState(() {
+            isLoading = false;
+            isConnectedKafkaBrokers = true;
+          });
+          _showToast("Successfully connected to Kafka broker!", "success");
+        }
       },
+      child: BlocBuilder<BrokerBloc, BrokerState>(
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            child: Column(
+              children: [
+                const SizedBox(height: 7),
+                TextFormField(
+                  maxLines: 1,
+                  controller: brokersController,
+                  decoration: InputDecoration(
+                    labelText: 'Brokers',
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String text) async {
+                    setState(() {
+                      displayConnectBrokerResult = false;
+                      isConnectedKafkaBrokers = false;
+                    });
+                  },
+                ),
+
+                const SizedBox(height: 7),
+                TextFormField(
+                  maxLines: 1,
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String text) async {
+                    setState(() {
+                      displayConnectBrokerResult = false;
+                      isConnectedKafkaBrokers = false;
+                    });
+                  },
+                ),
+
+                const SizedBox(height: 7),
+                TextFormField(
+                  maxLines: 1,
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String text) async {
+                    setState(() {
+                      displayConnectBrokerResult = false;
+                      isConnectedKafkaBrokers = false;
+                    });
+                  },
+                ),
+
+                const SizedBox(height: 7),
+                ElevatedButton(
+                  onPressed: isLoading ? null : () => _connectKafkaBroker(context),
+                  child: isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text("Connect"),
+                ),
+                const SizedBox(height: 7),
+                _toggleNextButton(context),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
   void _connectKafkaBroker(BuildContext context) {
-    Broker broker;
-    broker = Broker(
+    setState(() {
+      isLoading = true;
+      isConnectedKafkaBrokers = false;
+    });
+
+    Broker broker = Broker(
       broker_url: brokersController.text,
       username: usernameController.text,
       password: passwordController.text,
@@ -155,14 +185,6 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
   }
 
   Widget _toggleNextButton(BuildContext context) {
-    if (!displayConnectBrokerResult) {
-      return Container();
-    }
-
-    if (isLoading) {
-      return const CircularProgressIndicator();
-    }
-
     if (isConnectedKafkaBrokers) {
       return Center(
         child: Column(
@@ -196,8 +218,10 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
         break;
       case "success":
         color = Colors.greenAccent;
+        break;
       case "warning":
         color = Colors.orangeAccent;
+        break;
       default:
         color = Colors.cyanAccent;
     }
