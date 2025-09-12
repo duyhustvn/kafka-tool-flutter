@@ -17,6 +17,9 @@ class BrokerBloc extends Bloc<BrokerEvent, BrokerState> {
     ConnectBroker event,
     Emitter<BrokerState> emit,
   ) async {
+    // Emit loading state and clear any previous errors
+    emit(state.copyWith(isLoading: true, clearError: true));
+
     try {
       Broker broker = event.broker;
       await repository.connectKafkaBrokers(
@@ -29,10 +32,15 @@ class BrokerBloc extends Bloc<BrokerEvent, BrokerState> {
           broker: broker.broker_url,
           username: broker.username,
           password: broker.password,
+          isLoading: false,
+          clearError: true,
         ),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(
+        error: e.toString(),
+        isLoading: false,
+      ));
     }
   }
 }

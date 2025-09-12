@@ -34,7 +34,6 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
 
   bool isConnectedKafkaBrokers = false;
   bool displayConnectBrokerResult = false;
-  bool isLoading = false;
 
   late FToast fToast;
 
@@ -59,15 +58,13 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
   Widget build(BuildContext context) {
     return BlocListener<BrokerBloc, BrokerState>(
       listener: (context, state) {
-        if (state.error != null) {
+        if (state.error != null && !state.isLoading) {
           setState(() {
-            isLoading = false;
             isConnectedKafkaBrokers = false;
           });
           _showToast(state.error!, "error");
-        } else if (state.broker != null) {
+        } else if (state.broker != null && !state.isLoading) {
           setState(() {
-            isLoading = false;
             isConnectedKafkaBrokers = true;
           });
           _showToast("Successfully connected to Kafka broker!", "success");
@@ -150,8 +147,8 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
 
                 const SizedBox(height: 7),
                 ElevatedButton(
-                  onPressed: isLoading ? null : () => _connectKafkaBroker(context),
-                  child: isLoading
+                  onPressed: state.isLoading ? null : () => _connectKafkaBroker(context),
+                  child: state.isLoading
                     ? const SizedBox(
                         width: 20,
                         height: 20,
@@ -171,7 +168,6 @@ class _BrokerSetupWidget extends State<BrokerSetupWidget> {
 
   void _connectKafkaBroker(BuildContext context) {
     setState(() {
-      isLoading = true;
       isConnectedKafkaBrokers = false;
     });
 
